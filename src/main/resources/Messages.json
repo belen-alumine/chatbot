@@ -1,0 +1,25 @@
+{
+  "welcomeMessages": [
+    "Hola!",
+    "Hi there!",
+    "Buenass"
+  ],
+  "byeMessages": [
+    "Nos vemos!",
+    "Chauuu",
+    "Hasta la próxima"
+  ],
+  "errorMessages": [
+    "Perdón, algo salió mal.",
+    "Estoy teniendo algunos problemas en este momento. Intentá de nuevo más tarde."
+  ],
+  "error400": [
+    "Perdón, no te entendí, me lo podés decir de otra manera?",
+  ],
+  "error404": [
+    "No encontré lo que estaba buscando.",
+  ],
+  "errorSinContexto": [
+  "Perdón, me olvidé de qué estábamos hablando, podemos volver a empezar?",
+]
+}
