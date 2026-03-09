@@ -1,39 +1,38 @@
 package com.example.chatbot.infrastructure.adapter.in.console;
 
 import com.example.chatbot.application.port.in.HandleUserMessageInputPort;
-import com.example.chatbot.domain.model.ChatBot;
 import com.example.chatbot.domain.model.User;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 
 import java.util.Scanner;
 
 @Component
-public class ConsoleInputAdapter {
+public class ConsoleInputAdapter implements CommandLineRunner {
+    private HandleUserMessageInputPort useCase;
 
-    private final HandleUserMessageInputPort inputPort;
-    private final Scanner scanner;
-    private final ChatBot chatBot;
-
-    public ConsoleInputAdapter(HandleUserMessageInputPort inputPort, ChatBot chatBot) {
-        this.inputPort = inputPort;
-        this.scanner = new Scanner(System.in);
-        this.chatBot = chatBot;
+    public ConsoleInputAdapter(HandleUserMessageInputPort useCase) {
+        this.useCase = useCase;
     }
 
-    public void start() {
+    @Override
+    public void run(String... args) throws Exception {
+        System.out.println("***Console started***");
+        start();
+    }
 
-        System.out.println("Chat started. Type something:");
-        User consoleUser = chatBot.createUser();
+    private void start() {
+        User consoleUser = useCase.createUser();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Chat started. Type something: ");
 
         while (true) {
-
+            System.out.print("> ");
             String input = scanner.nextLine();
 
-            String response = inputPort.handleUserMessage(
-                    consoleUser.getUserId(),
-                    input
-            );
+            String response = useCase.handleUserMessage(consoleUser.getUserId(), input);
 
             System.out.println(response);
         }
