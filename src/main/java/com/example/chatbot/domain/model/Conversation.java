@@ -13,13 +13,20 @@ public class Conversation {
         System.out.println("Conversation was created: " + conversationId + ", with State:  " + conversationState);
     }
 
+    public Conversation(UUID conversationId, ConversationState conversationState, String userName) {
+        this.conversationId = conversationId;
+        this.conversationState = conversationState;
+        this.userName = userName;
+    }
+
     public ConversationResponse handleUserMessage(String message) {
-        System.out.println("Conversation received: " + conversationId + ", Message: " + message);
-        System.out.println("Conversation State: " + conversationState);
-        switch (conversationState) {
+        System.out.println("Conversation received: " + conversationId + ", Message: " + message + "Conversation State this: " + this.conversationState);
+        ConversationState convState = this.conversationState;
+        switch (convState) {
             case NEW:
                 System.out.println("Is a NEW conversation    // switch de Conversation");
-                conversationState = ConversationState.WAITING_FOR_NAME;
+                this.setConversationState(ConversationState.WAITING_FOR_NAME);
+                System.out.println("Conversation received: " + this.conversationId +"Conversation State this: " + this.conversationState);
                 return new ConversationResponse("Hola, cuál es tu nombre");
             case WAITING_FOR_NAME:
                 conversationState = ConversationState.IN_PROGRESS;
@@ -32,6 +39,10 @@ public class Conversation {
             default:
                 return new ConversationResponse("Error.");
         }
+    }
+
+    private void setConversationState(ConversationState conversationState) {
+        this.conversationState = conversationState;
     }
 
 

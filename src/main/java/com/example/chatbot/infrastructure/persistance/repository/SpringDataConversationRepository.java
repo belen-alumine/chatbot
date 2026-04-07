@@ -3,7 +3,9 @@ package com.example.chatbot.infrastructure.persistance.repository;
 import com.example.chatbot.infrastructure.persistance.entity.ConversationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface SpringDataConversationRepository extends JpaRepository<ConversationEntity, UUID> {
+    List<ConversationEntity> findByUserId(UUID userId);
 }

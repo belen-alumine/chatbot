@@ -19,17 +19,21 @@ public class JpaConversationRepositoryAdapter implements ConversationRepository 
 
     @Override
     public Conversation save(Conversation conversation, UUID userId) {
-        ConversationEntity entity = mapToEntity(conversation, userId);
+        ConversationEntity entity = springDataConversationRepository
+                .findById(conversation.getConversationId())
+                .map(existingEntity -> {
+                    existingEntity.setConversationState(conversation.getConversationState());
+                    existingEntity.setUserName(conversation.getUserName());
+                    return existingEntity;
+                })
+                .orElseGet(() -> mapToEntity(conversation, userId));
 
-        springDataConversationRepository.save(entity);
-
+        springDataConversationRepository.saveAndFlush(entity);
         return conversation;
     }
 
     private ConversationEntity mapToEntity(Conversation conversation, UUID userId) {
-
         ConversationEntity entity = new ConversationEntity();
-
         entity.setConversationId(conversation.getConversationId());
         entity.setUserId(userId);
         entity.setConversationState(conversation.getConversationState());
@@ -39,6 +43,15 @@ public class JpaConversationRepositoryAdapter implements ConversationRepository 
 
     @Override
     public Optional<Conversation> findById(UUID id) {
-        return Optional.empty();
+        return springDataConversationRepository.findById(id)
+                .map(this::mapToDomain);
+    }
+
+    private Conversation mapToDomain(ConversationEntity entity) {
+        return new Conversation(
+                entity.getConversationId(),
+                entity.getConversationState(),
+                entity.getUserName()
+        );
     }
 }

@@ -42,4 +42,8 @@ public class User {
     public UUID getUserId() {
         return userId;
     }
+
+    public void addConversation(Conversation conversation) {
+        conversations.add(conversation);
+    }
 }
