@@ -19,25 +19,41 @@ public class Conversation {
         this.userName = userName;
     }
 
-    public ConversationResponse handleUserMessage(String message) {
-        System.out.println("Conversation received: " + conversationId + ", Message: " + message + "Conversation State this: " + this.conversationState);
+    public ConversationResponse handleUserMessage(String input) {
+        System.out.println("Conversation received: " + conversationId + ", Input: " + input + "Conversation State this: " + this.conversationState);
+        String cleanInput = input.toLowerCase().trim();
         ConversationState convState = this.conversationState;
         switch (convState) {
             case NEW:
-                System.out.println("Is a NEW conversation    // switch de Conversation");
                 this.setConversationState(ConversationState.WAITING_FOR_NAME);
                 System.out.println("Conversation received: " + this.conversationId +"Conversation State this: " + this.conversationState);
-                return new ConversationResponse("Hola, cuál es tu nombre");
+                return new ConversationResponse("¿Con quién estoy hablando?");
             case WAITING_FOR_NAME:
                 conversationState = ConversationState.IN_PROGRESS;
-                userName = message;
-                return new ConversationResponse("Hola, " + message);
-            case IN_PROGRESS:
-                if (message.equals("Chau")) { conversationState = ConversationState.CLOSE;}
-                userName = message;
-                return new ConversationResponse("Hola, ");
+                userName = input;
+                return new ConversationResponse("¿En qué puedo ayudarte, " + input + "? \uD83D\uDE04");
+            case WAITING_FOR_CHAT:
+                conversationState = ConversationState.IN_PROGRESS;
+                return new ConversationResponse("");
+            case IN_PROGRESS: 
+                String msg = "¿Algo más?";
+                if (Patterns.esDespedida(cleanInput)) {
+                    msg = "Chau, " + userName + ", nos vemos pronto";
+                    System.out.println("Conversation response: " + msg +"Conversation State this: " + conversationState);
+                    conversationState = ConversationState.CLOSE;
+                    return new ConversationResponse(msg);
+                }
+                conversationState = ConversationState.IN_PROGRESS;
+                return new ConversationResponse("Perdón, no sé de eso \uD83E\uDD7A, ¿de qué otra cosa te gustaría hablar?");
+            case CLOSE:
+                System.out.println("Conversation State this: " + conversationState);
+                return new ConversationResponse("La conversación se encuentra terminada \uD83D\uDE36\u200D\uD83C\uDF2B\uFE0F. Podés escribir 'Hola' para iniciar una nueva ");
             default:
-                return new ConversationResponse("Error.");
+                // String randomTheme = getRandomeTheme // buscar un tema random de la lista de temas que el bot conoce
+                // devolver el tema random en el mensaje
+                System.out.println("Conversation State this: " + conversationState);
+                conversationState = ConversationState.IN_PROGRESS;
+                return new ConversationResponse("Perdón, no sé de eso \uD83E\uDD7A, ¿de qué otra cosa te gustaría hablar?");
         }
     }
 

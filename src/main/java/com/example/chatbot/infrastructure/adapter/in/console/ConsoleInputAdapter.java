@@ -5,7 +5,6 @@ import com.example.chatbot.domain.model.User;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-
 import java.util.Scanner;
 
 @Component
@@ -18,7 +17,7 @@ public class ConsoleInputAdapter implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("***Console started***");
+        System.out.println("*** Console started ***");
         start();
     }
 
@@ -26,7 +25,7 @@ public class ConsoleInputAdapter implements CommandLineRunner {
         User consoleUser = useCase.createUser();
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Chat started. Type something: ");
+        System.out.print("¡Hola!, soy el ChatBot de pruebas Java \uD83E\uDD16 ");
 
         while (true) {
             System.out.print("> ");
