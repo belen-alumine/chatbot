@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chatbot — prueba</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.25rem; }
+    label { display: block; margin-top: 1rem; font-weight: 600; font-size: 0.9rem; }
+    input[type="text"], textarea { width: 100%; box-sizing: border-box; padding: 0.4rem; font: inherit; }
+    textarea { min-height: 12rem; resize: vertical; font-family: ui-monospace, monospace; white-space: pre-wrap; }
+    .row { margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    button { padding: 0.45rem 0.9rem; cursor: pointer; font: inherit; }
+    .hint { color: #555; font-size: 0.85rem; margin-top: 0.35rem; }
+  </style>
+</head>
+<body>
+  <h1>Chatbot (adapter mínimo)</h1>
+  <p class="hint">Solo UI de prueba: sirve archivos estáticos desde Spring. Asumí que tu API expone <code>POST /api/v1/sessions</code> (crea sesión, JSON <code>{"userId":"..."}</code>) y <code>POST /api/v1/messages</code> con body <code>{"userId":"...","message":"..."}</code> y respuesta <code>{"reply":"...","state":"..."}</code>. Ajustá rutas en el script si usás otros paths. Por defecto: <code>http://localhost:6000/chat.html</code>.</p>
+
+  <label for="session">Sesión (userId)</label>
+  <input id="session" type="text" readonly placeholder="Pulsá «Nueva sesión»">
+
+  <div class="row">
+    <button type="button" id="btnSession">Nueva sesión</button>
+  </div>
+
+  <label for="msg">Mensaje</label>
+  <input id="msg" type="text" autocomplete="off" placeholder="Escribí y Enter o «Enviar»">
+
+  <div class="row">
+    <button type="button" id="btnSend">Enviar</button>
+  </div>
+
+  <label for="out">Salida</label>
+  <textarea id="out" readonly></textarea>
+
+  <script>
+    (function () {
+      var base = '';
+      var sessionEl = document.getElementById('session');
+      var msgEl = document.getElementById('msg');
+      var outEl = document.getElementById('out');
+
+      function log(line) {
+        outEl.value += line + '\n';
+        outEl.scrollTop = outEl.scrollHeight;
+      }
+
+      document.getElementById('btnSession').onclick = function () {
+        fetch(base + '/api/v1/sessions', { method: 'POST' })
+          .then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+          })
+          .then(function (j) {
+            sessionEl.value = j.userId;
+            log('[sesión] userId=' + j.userId);
+          })
+          .catch(function (e) { log('[error] sesión: ' + e.message); });
+      };
+
+      function send() {
+        var userId = sessionEl.value.trim();
+        var message = msgEl.value;
+        if (!userId) {
+          log('[error] Creá una sesión primero.');
+          return;
+        }
+        fetch(base + '/api/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: userId, message: message })
+        })
+          .then(function (r) {
+            if (!r.ok) return r.text().then(function (t) { throw new Error(r.status + ' ' + t); });
+            return r.json();
+          })
+          .then(function (j) {
+            log('Tú: ' + message);
+            log('Bot [' + j.state + ']: ' + j.reply);
+            msgEl.value = '';
+          })
+          .catch(function (e) { log('[error] mensaje: ' + e.message); });
+      }
+
+      document.getElementById('btnSend').onclick = send;
+      msgEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); send(); }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ import com.example.chatbot.application.port.out.UserRepository;
 import com.example.chatbot.domain.model.Conversation;
 import com.example.chatbot.domain.model.ConversationResponse;
 import com.example.chatbot.domain.model.User;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -20,6 +21,7 @@ public class HandleUserMessageUseCase implements HandleUserMessageInputPort {
         this.conversationRepository = conversationRepository;
     }
 
+    @Transactional
     @Override
     public User createUser() {
         User user = new User();
@@ -29,18 +31,17 @@ public class HandleUserMessageUseCase implements HandleUserMessageInputPort {
     }
 
     @Override
+    @Transactional
     public String handleUserMessage(UUID userId, String input) {
         System.out.println("handleUserMessage");
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        ConversationResponse response =
-                user.handleUserMessage(input);
+        ConversationResponse response = user.handleUserMessage(input);
 
         Conversation conversation = user.getCurrentConversation();
         conversationRepository.save(conversation, userId);
-
-        userRepository.save(user);
 
         return response.getMessage();
     }

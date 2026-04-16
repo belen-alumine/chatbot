@@ -37,11 +37,17 @@ public class Conversation {
                 return new ConversationResponse("");
             case IN_PROGRESS: 
                 String msg = "¿Algo más?";
-                if (Patterns.esDespedida(cleanInput)) {
+                if (Patterns.esDespedida(cleanInput) || Patterns.isNothingElse(input)) {
                     msg = "Chau, " + userName + ", nos vemos pronto";
                     System.out.println("Conversation response: " + msg +"Conversation State this: " + conversationState);
                     conversationState = ConversationState.CLOSE;
                     return new ConversationResponse(msg);
+                }
+                String theme = Patterns.themeQuestion(cleanInput);
+                if (!theme.equals("")) {
+                    String response = Patterns.selectResponse(theme);
+                    conversationState = ConversationState.IN_PROGRESS;
+                    return new ConversationResponse(response + " ¿Algo más que quieras saber?");
                 }
                 conversationState = ConversationState.IN_PROGRESS;
                 return new ConversationResponse("Perdón, no sé de eso \uD83E\uDD7A, ¿de qué otra cosa te gustaría hablar?");
@@ -60,7 +66,6 @@ public class Conversation {
     private void setConversationState(ConversationState conversationState) {
         this.conversationState = conversationState;
     }
-
 
     public UUID getConversationId() {
         return conversationId;

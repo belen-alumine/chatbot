@@ -1,25 +1,32 @@
 package com.example.chatbot.infrastructure.persistance.entity;
 
 import com.example.chatbot.domain.model.ConversationState;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "conversarions")
+@Table(name = "conversations")
 public class ConversationEntity {
     @Id
     @Column(name = "conversation_id")
     private UUID conversationId;
+
+    // EN LUGAR DE: private UUID userId;
+    // USA ESTO:
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    //private UserEntity userId;
+
     @Column(name = "user_id")
     private UUID userId; // FK
-    @Column(name = "conversation_state")
+
+    @Column(name = "state")
+    @Enumerated(EnumType.STRING)
     private ConversationState conversationState;
     @Column(name = "user_name")
     private String userName;
+
 
     public ConversationEntity() {
     }
@@ -62,5 +69,9 @@ public class ConversationEntity {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public UUID getId() {
+        return conversationId;
     }
 }

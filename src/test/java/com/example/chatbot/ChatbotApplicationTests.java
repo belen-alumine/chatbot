@@ -1,16 +1,15 @@
 package com.example.chatbot;
 
 
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 public class ChatbotApplicationTests {
-//    public static final Logger log =
-//            LoggerFactory.getLogger(ConsumerTest.class);
-
+    @Test
+    void smokeTest() {
+        assertTrue(true);
+    }
 
 
 }

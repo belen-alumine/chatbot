@@ -7,6 +7,7 @@ import com.example.chatbot.infrastructure.persistance.entity.ConversationEntity;
 import com.example.chatbot.infrastructure.persistance.entity.UserEntity;
 import com.example.chatbot.infrastructure.persistance.repository.SpringDataConversationRepository;
 import com.example.chatbot.infrastructure.persistance.repository.SpringDataUserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,19 +25,21 @@ public class JpaUserReposityAdapter implements UserRepository {
         this.springConversationRepository = springConversationRepository;
     }
 
+    @Transactional
     @Override
     public User save(User user) {
-
-        UserEntity entity = toEntity(user);
-
-        UserEntity savedEntity = springUserRepository.save(entity);
-
+        if (springUserRepository.existsByUserId(user.getUserId())) {
+            return springUserRepository.findFirstByUserId(user.getUserId())
+                    .map(this::toDomain)
+                    .orElseThrow(() -> new RuntimeException("User exists but cannot be loaded"));
+        }
+        UserEntity savedEntity = springUserRepository.save(toEntity(user));
         return toDomain(savedEntity);
     }
 
     @Override
     public Optional<User> findById(UUID id) {
-        return springUserRepository.findById(id)
+        return springUserRepository.findFirstByUserId(id)
                 .map(this::toDomain);
     }
 

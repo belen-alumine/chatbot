@@ -1,6 +1,5 @@
 package com.example.chatbot.application.port.in;
 
-
 import com.example.chatbot.domain.model.User;
 
 import java.util.UUID;
