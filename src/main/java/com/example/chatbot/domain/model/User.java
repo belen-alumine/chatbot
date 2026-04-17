@@ -46,4 +46,8 @@ public class User {
     public void addConversation(Conversation conversation) {
         conversations.add(conversation);
     }
+
+    public List<Conversation> getConversations() {
+        return conversations;
+    }
 }

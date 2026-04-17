@@ -27,7 +27,7 @@ public class WeatherHTTPAdapter implements WeatherExterno {
                     apiUrl + "?latitude=%f&longitude=%f&current=temperature_2m",
                     lat, lon
             );
-            System.out.println(url);
+            //System.out.println(url);
 
             WeatherExternalDTO response = restTemplate.getForObject(url, WeatherExternalDTO.class);
             return Optional.of(new Weather(response.current().temperature_2m()));

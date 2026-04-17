@@ -2,7 +2,14 @@ package com.example.chatbot.infrastructure.adapter.in.rest.controller;
 
 import com.example.chatbot.application.port.in.HandleUserMessageInputPort;
 import com.example.chatbot.application.port.out.UserRepository;
+import com.example.chatbot.domain.model.Conversation;
+import com.example.chatbot.domain.model.User;
+import com.example.chatbot.infrastructure.adapter.in.rest.dto.UserResponse;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -13,5 +20,22 @@ public class UserController {
     public UserController(HandleUserMessageInputPort chatUseCase, UserRepository userRepository) {
         this.chatUseCase = chatUseCase;
         this.userRepository = userRepository;
+    }
+
+    @GetMapping("/{userId}")
+    public UserResponse getUserById(@PathVariable UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<Conversation> conversations = user.getConversations();
+        List<UUID> conversationIds = new ArrayList<>();
+        for (Conversation conversation : conversations) {
+            conversationIds.add(conversation.getConversationId());
+        }
+
+
+        return new UserResponse(
+                user.getUserId(),
+                conversationIds
+        );
     }
 }
