@@ -4,7 +4,10 @@ import com.example.chatbot.application.port.in.HandleUserMessageInputPort;
 import com.example.chatbot.application.port.out.UserRepository;
 import com.example.chatbot.domain.model.Conversation;
 import com.example.chatbot.domain.model.User;
+import com.example.chatbot.infrastructure.adapter.in.rest.dto.NewUserResponse;
+import com.example.chatbot.infrastructure.adapter.in.rest.dto.UserRequest;
 import com.example.chatbot.infrastructure.adapter.in.rest.dto.UserResponse;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,16 +29,27 @@ public class UserController {
     public UserResponse getUserById(@PathVariable UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        List<Conversation> conversations = user.getConversations();
+
+        return new UserResponse(
+                user.getUserId(),
+                getConversationIds(user.getConversations())
+        );
+    }
+
+    @PostMapping("/new")
+    public NewUserResponse createUser() {
+        User user = new User();
+        return new NewUserResponse(
+                user.getUserId(),
+                getConversationIds(user.getConversations())
+        );
+    }
+
+    public List<UUID> getConversationIds(List<Conversation> conversations) {
         List<UUID> conversationIds = new ArrayList<>();
         for (Conversation conversation : conversations) {
             conversationIds.add(conversation.getConversationId());
         }
-
-
-        return new UserResponse(
-                user.getUserId(),
-                conversationIds
-        );
+        return conversationIds;
     }
 }
